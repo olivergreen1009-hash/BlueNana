@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PageShell } from "@/components/PageShell";
+import { IconHelp, IconLightbulbOutline, IconPeople } from "@/components/icons";
 import { INSPIRATION_STARTERS, WHO_AFFECTS_LABELS } from "@/lib/prompts";
 import {
   setBetterProblem,
@@ -17,10 +18,13 @@ const WHO_OPTIONS: WhoAffects[] = [
   "other",
 ];
 
+const PROBLEM_MAX = 200;
+
 export default function BetterPage() {
   const router = useRouter();
   const [problem, setProblem] = useState("");
   const [who, setWho] = useState<WhoAffects | "">("");
+  const [showInspiration, setShowInspiration] = useState(false);
 
   const continueNext = () => {
     const trimmed = problem.trim();
@@ -31,34 +35,63 @@ export default function BetterPage() {
   };
 
   return (
-    <PageShell showBanana bananaSize="sm">
-      <p className="text-center text-xs font-medium uppercase tracking-wide text-sky-600">
-        Step 1 of 3
-      </p>
-      <h1 className="mt-2 text-center text-xl font-bold text-sky-950">
+    <PageShell
+      header="better"
+      showLogo={false}
+      helpSlot={
+        <button
+          type="button"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-sky-200 text-[#1A5AD7]"
+          aria-label="Help"
+        >
+          <IconHelp size={20} />
+        </button>
+      }
+    >
+      <h1 className="text-xl font-bold leading-snug text-slate-900">
         What&apos;s a small frustration you&apos;ve noticed?
       </h1>
 
-      <label className="mt-6 block">
+      <label className="relative mt-5 block">
         <textarea
           value={problem}
-          onChange={(e) => setProblem(e.target.value)}
-          rows={4}
-          placeholder="Describe it in your own words…"
-          className="mt-1 w-full rounded-xl border border-sky-100 bg-white px-3 py-3 text-base text-slate-800 shadow-sm outline-none focus:ring-2 focus:ring-sky-300"
+          onChange={(e) =>
+            setProblem(e.target.value.slice(0, PROBLEM_MAX))
+          }
+          rows={5}
+          placeholder="Type your frustration here..."
+          className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-800 outline-none focus:ring-2 focus:ring-sky-200"
         />
+        <span className="pointer-events-none absolute bottom-3 right-3 text-xs text-slate-400">
+          {problem.length}/{PROBLEM_MAX}
+        </span>
       </label>
 
-      <details className="mt-3 rounded-xl border border-sky-100 bg-sky-50/50 px-3 py-2">
-        <summary className="cursor-pointer text-sm font-medium text-sky-800">
-          Need inspiration?
-        </summary>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
+      <button
+        type="button"
+        onClick={() => setShowInspiration((v) => !v)}
+        className="mt-4 flex w-full items-start gap-2 text-left"
+      >
+        <IconLightbulbOutline
+          size={22}
+          className="mt-0.5 shrink-0 text-[#1A5AD7]"
+        />
+        <span>
+          <span className="font-semibold text-[#1A5AD7]">Need inspiration?</span>
+          <span className="mt-1 block text-sm text-slate-500">
+            Think about daily tasks, moments, or situations that feel harder than
+            they should.
+          </span>
+        </span>
+      </button>
+
+      {showInspiration ? (
+        <ul className="mt-2 space-y-1 rounded-xl border border-sky-100 bg-sky-50/50 p-3 text-sm text-slate-600">
           {INSPIRATION_STARTERS.map((line) => (
             <li key={line}>
               <button
                 type="button"
-                className="text-left hover:text-sky-800"
+                className="text-left hover:text-[#1A5AD7]"
                 onClick={() => setProblem(line)}
               >
                 {line}
@@ -66,28 +99,39 @@ export default function BetterPage() {
             </li>
           ))}
         </ul>
-      </details>
+      ) : null}
 
       <fieldset className="mt-6">
-        <legend className="text-sm font-medium text-slate-700">
-          Who it affects
+        <legend className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-800">
+          <IconPeople size={18} className="text-[#1A5AD7]" />
+          Who it affects:
         </legend>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
           {WHO_OPTIONS.map((option) => {
             const active = who === option;
+            const id = `who-${option}`;
             return (
-              <button
+              <label
                 key={option}
-                type="button"
-                onClick={() => setWho(option)}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                htmlFor={id}
+                className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition ${
                   active
-                    ? "bg-sky-600 text-white"
-                    : "bg-white text-slate-600 ring-1 ring-sky-100 hover:bg-sky-50"
+                    ? "border-[#1A5AD7] bg-sky-50/50"
+                    : "border-slate-200 bg-white hover:border-sky-200"
                 }`}
               >
-                {WHO_AFFECTS_LABELS[option]}
-              </button>
+                <input
+                  id={id}
+                  type="radio"
+                  name="who"
+                  checked={active}
+                  onChange={() => setWho(option)}
+                  className="h-4 w-4 accent-[#1A5AD7]"
+                />
+                <span className="text-sm font-medium text-slate-800">
+                  {WHO_AFFECTS_LABELS[option]}
+                </span>
+              </label>
             );
           })}
         </div>
@@ -97,9 +141,10 @@ export default function BetterPage() {
         type="button"
         disabled={!problem.trim() || !who}
         onClick={continueNext}
-        className="mt-8 w-full rounded-xl bg-[#FFE566] px-4 py-3.5 text-sm font-semibold text-sky-950 shadow-sm disabled:opacity-40 hover:bg-[#f5d955]"
+        className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-[#FACC15] px-4 py-3.5 text-sm font-bold text-slate-900 shadow-sm disabled:opacity-40 hover:bg-[#eab308]"
       >
         Continue to solutions
+        <span aria-hidden>→</span>
       </button>
     </PageShell>
   );

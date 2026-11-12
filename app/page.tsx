@@ -1,42 +1,92 @@
 import Link from "next/link";
 import { Banana } from "@/components/Banana";
+import { Logo } from "@/components/Logo";
 import { PageShell } from "@/components/PageShell";
+import {
+  IconCheck,
+  IconChevronRight,
+  IconHeart,
+  IconLightbulbOutline,
+  IconLock,
+} from "@/components/icons";
 
 export default function Home() {
   return (
-    <PageShell showLogo className="bg-white">
-      <div className="mb-8 flex justify-center pt-2">
-        <Banana size="lg" allowRemark />
+    <PageShell showLogo={false} className="bg-white">
+      <div className="mb-6 flex justify-center pt-2">
+        <LogoHeader />
       </div>
-      <header className="text-center">
-        <h1 className="mx-auto max-w-[20rem] text-[1.625rem] font-bold leading-snug tracking-tight text-slate-900 sm:max-w-none sm:text-[1.75rem]">
-          Make one little part of the world better today.
-        </h1>
-        <p className="mx-auto mt-4 max-w-xs text-[0.9375rem] leading-relaxed text-slate-600 sm:max-w-sm sm:text-base">
-          Small ideas. Real people. A happier world.
-        </p>
-      </header>
 
-      <div className="mt-12 flex flex-col gap-5">
+      <div className="relative mt-4 flex gap-3">
+        <header className="flex-1 pt-1">
+          <h1 className="text-[1.35rem] font-bold leading-snug tracking-tight text-[#1A5AD7] sm:text-2xl">
+            Make one little part of the world{" "}
+            <span className="wavy-underline inline-block">better today.</span>
+          </h1>
+          <p className="mt-4 text-sm leading-relaxed text-slate-600">
+            Small ideas. Real people. A happier world.
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-slate-500">
+            A little inspiration to make everyday life better.
+          </p>
+        </header>
+        <div className="shrink-0 pt-2">
+          <Banana size="lg" variant="standing" />
+        </div>
+      </div>
+
+      <div className="mt-8 flex flex-col gap-4">
         <PathCard
           href="/good"
           title="Do a Little Good"
           tagline="Tiny actions. Big difference."
           cta="Find a small idea"
+          icon="heart"
         />
         <PathCard
           href="/better"
           title="Make Something Better"
           tagline="Spotted a problem? Let's improve it."
           cta="Let's solve a problem"
-          accent
+          icon="bulb"
         />
       </div>
 
-      <footer className="mt-auto pt-14 text-center text-sm leading-relaxed text-slate-500">
-        Free to start · Private by default · No pressure
+      <footer className="mt-10 flex items-center justify-center gap-0 rounded-2xl bg-sky-50/80 px-2 py-4 text-xs text-slate-600">
+        <TrustItem icon="check" label="Free to start" />
+        <span className="mx-2 h-4 w-px bg-slate-200" aria-hidden />
+        <TrustItem icon="lock" label="Private by default" />
+        <span className="mx-2 h-4 w-px bg-slate-200" aria-hidden />
+        <TrustItem icon="heart" label="No pressure" />
       </footer>
     </PageShell>
+  );
+}
+
+function LogoHeader() {
+  return <Logo size="md" />;
+}
+
+function TrustItem({
+  icon,
+  label,
+}: {
+  icon: "check" | "lock" | "heart";
+  label: string;
+}) {
+  return (
+    <span className="flex flex-col items-center gap-1 px-1 text-center">
+      {icon === "check" ? (
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1A5AD7] text-white">
+          <IconCheck size={14} />
+        </span>
+      ) : icon === "lock" ? (
+        <IconLock size={18} className="text-[#1A5AD7]" />
+      ) : (
+        <IconHeart size={18} className="text-[#FACC15]" />
+      )}
+      <span className="leading-tight">{label}</span>
+    </span>
   );
 }
 
@@ -45,36 +95,37 @@ function PathCard({
   title,
   tagline,
   cta,
-  accent,
+  icon,
 }: {
   href: string;
   title: string;
   tagline: string;
   cta: string;
-  accent?: boolean;
+  icon: "heart" | "bulb";
 }) {
   return (
     <Link
       href={href}
-      className="group flex flex-col rounded-2xl border border-slate-100 bg-white px-5 py-6 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:border-sky-100 hover:shadow-[0_4px_12px_rgba(59,130,246,0.08)]"
+      className="group flex items-start gap-4 rounded-2xl border border-slate-100 bg-white px-4 py-5 shadow-[0_1px_4px_rgba(15,23,42,0.06)] transition hover:border-sky-100 hover:shadow-md"
     >
-      <div
-        className={`mb-4 h-1 w-12 rounded-full ${
-          accent ? "bg-[#FFE566]" : "bg-[#3B82F6]"
-        }`}
-      />
-      <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-        {title}
-      </h2>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">{tagline}</p>
       <span
-        className={`mt-5 inline-flex w-fit items-center rounded-full px-5 py-2.5 text-sm font-semibold ${
-          accent
-            ? "bg-[#FFE566] text-slate-900"
-            : "bg-[#3B82F6] text-white group-hover:bg-blue-600"
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${
+          icon === "heart" ? "bg-sky-100" : "bg-yellow-100"
         }`}
       >
-        {cta}
+        {icon === "heart" ? (
+          <IconHeart size={24} className="text-[#1A5AD7]" />
+        ) : (
+          <IconLightbulbOutline size={24} className="text-[#FACC15]" />
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <h2 className="text-lg font-bold text-[#1A5AD7]">{title}</h2>
+        <p className="mt-1 text-sm text-slate-600">{tagline}</p>
+        <span className="mt-3 inline-flex items-center gap-0.5 text-sm font-semibold text-[#1A5AD7]">
+          {cta}
+          <IconChevronRight size={16} />
+        </span>
       </span>
     </Link>
   );
