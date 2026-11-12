@@ -58,7 +58,7 @@ export default function MixPage() {
 
       <MixDivider />
 
-      <MixPairCard pair={pair} />
+      <MixPairCard pair={pair} flipKey={index} />
 
       <label className="mt-4 block">
         <span className="text-sm font-medium text-slate-700">

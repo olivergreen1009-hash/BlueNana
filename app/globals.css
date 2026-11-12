@@ -23,3 +23,20 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+
+@keyframes mix-pair-reveal {
+  0% {
+    transform: perspective(480px) rotateY(-88deg);
+    opacity: 0.35;
+  }
+  100% {
+    transform: perspective(480px) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+.mix-pair-reveal {
+  animation: mix-pair-reveal 0.42s ease-out;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}

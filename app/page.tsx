@@ -46,6 +46,23 @@ export default function Home() {
           cta="Mix something new"
           variant="mix"
         />
+        <Link
+          href="/silly"
+          className="flex items-center gap-3 rounded-2xl border border-dashed border-bluenana/25 bg-[#FFF8DB]/50 px-4 py-4 text-left transition hover:border-bluenana/40 hover:bg-[#FFF8DB]/80"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-sm">
+            🎲
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-bluenana">Random silly prompt</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+              One playful idea—optional, no saving.
+            </p>
+          </div>
+          <span aria-hidden className="text-lg text-bluenana">
+            ›
+          </span>
+        </Link>
       </div>
 
       <TrustBar />
