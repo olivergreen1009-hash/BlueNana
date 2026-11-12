@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  BANANA_BODY_PATH,
+  BANANA_EYES,
+  BANANA_FACE,
+  BANANA_SMILE_PATH,
+  BANANA_STEM_PATH,
+  BANANA_BLUE,
+  BANANA_STEM_BLUE,
+  BANANA_VIEWBOX,
+} from "@/lib/banana-art";
 
 const REMARKS = [
   "Small steps count.",
@@ -16,7 +26,7 @@ type BananaProps = {
   className?: string;
 };
 
-const SIZES = { sm: 44, md: 64, lg: 112 } as const;
+const SIZES = { sm: 44, md: 64, lg: 120 } as const;
 
 export function Banana({
   size = "md",
@@ -42,28 +52,29 @@ export function Banana({
       <svg
         width={dim}
         height={dim}
-        viewBox="0 0 64 64"
+        viewBox={BANANA_VIEWBOX}
         aria-hidden
         className="shrink-0 drop-shadow-sm"
       >
+        <path d={BANANA_BODY_PATH} fill={BANANA_BLUE} />
+        <path d={BANANA_STEM_PATH} fill={BANANA_STEM_BLUE} />
         <path
-          d="M10 36 C10 16 26 6 44 12 C56 16 54 34 42 46 C30 56 14 52 10 36 Z"
-          fill="#3B8FE8"
-        />
-        <path
-          d="M44 10 C50 6 56 8 58 14 C54 12 48 13 44 18 Z"
-          fill="#2B7AD4"
-        />
-        <path
-          d="M20 32 Q26 26 32 32"
-          stroke="#1e4a7a"
+          d={BANANA_SMILE_PATH}
+          stroke={BANANA_FACE}
           strokeWidth="2.2"
           fill="none"
           strokeLinecap="round"
         />
-        <ellipse cx="24" cy="26" rx="2.2" ry="2.8" fill="#1e4a7a" />
-        <ellipse cx="36" cy="26" rx="2.2" ry="2.8" fill="#1e4a7a" />
-        <ellipse cx="28" cy="40" rx="3" ry="2" fill="#FFE566" opacity="0.35" />
+        {BANANA_EYES.map((eye) => (
+          <ellipse
+            key={`${eye.cx}-${eye.cy}`}
+            cx={eye.cx}
+            cy={eye.cy}
+            rx={eye.rx}
+            ry={eye.ry}
+            fill={BANANA_FACE}
+          />
+        ))}
       </svg>
       {remark ? (
         <p className="max-w-[14rem] text-center text-xs text-sky-800/80 italic">
