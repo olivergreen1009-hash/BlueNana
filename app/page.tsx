@@ -1,149 +1,121 @@
 import Link from "next/link";
 import { Banana } from "@/components/Banana";
-import { Logo } from "@/components/Logo";
-import { Nav } from "@/components/Nav";
+import { PageShell } from "@/components/PageShell";
 
 export default function Home() {
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-white">
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 pb-28 pt-5">
-        <Logo className="mb-6" />
-
-        <div className="relative mb-8 flex items-start gap-2">
-          <header className="min-w-0 flex-1 pt-1">
-            <h1 className="text-[1.35rem] font-bold leading-snug tracking-tight text-bluenana sm:text-[1.5rem]">
-              Make one little part of the{" "}
-              <span className="relative inline-block">
-                world
-                <svg
-                  className="absolute -bottom-1 left-0 w-full"
-                  height={6}
-                  viewBox="0 0 80 6"
-                  preserveAspectRatio="none"
-                  aria-hidden
-                >
-                  <path
-                    d="M0 4 Q10 0 20 4 T40 4 T60 3 T80 4"
-                    fill="none"
-                    stroke="#FACC15"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>{" "}
-              better today.
-            </h1>
-            <p className="mt-4 text-sm leading-relaxed text-slate-600">
-              Small ideas. Real people. A happier world.
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-slate-500">
-              A little inspiration to make everyday life better.
-            </p>
-          </header>
-          <div className="shrink-0 -mr-2 rotate-[18deg]">
-            <Banana size="lg" showHeart allowRemark />
-          </div>
+    <PageShell showLogo className="bg-white">
+      <div className="relative mb-6 flex items-start gap-2">
+        <header className="relative z-10 min-w-0 flex-1 pt-1">
+          <h1 className="text-[1.35rem] font-bold leading-snug tracking-tight text-bluenana sm:text-[1.5rem]">
+            Make one little part of the{" "}
+            <span className="relative inline-block">
+              world
+              <WavyUnderline />
+            </span>{" "}
+            better{" "}
+            <span className="relative inline-block">
+              today
+              <WavyUnderline />
+            </span>
+            .
+          </h1>
+          <p className="mt-4 text-sm leading-relaxed text-slate-600">
+            Small ideas. Real people.
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-slate-600">
+            A happier world.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-500">
+            A little inspiration to make everyday life better.
+          </p>
+        </header>
+        <div className="relative z-0 shrink-0 -mr-1">
+          <Banana size="lg" showHeart allowRemark />
         </div>
+      </div>
 
-        <div className="flex flex-col gap-4">
-          <PathCard
-            href="/good"
-            title="Do a Little Good"
-            tagline="Tiny actions. Big difference."
-            cta="Find a small idea"
-            variant="good"
-          />
-          <PathCard
-            href="/better"
-            title="Make Something Better"
-            tagline="Spotted a problem? Let's improve it."
-            cta="Let's solve a problem"
-            variant="better"
-          />
-        </div>
+      <div className="flex flex-col gap-4">
+        <PathCard
+          href="/good"
+          title="Do a Little Good"
+          tagline="Tiny actions. Big difference."
+          cta="Find a small idea"
+          variant="good"
+        />
+        <PathCard
+          href="/better"
+          title="Make Something Better"
+          tagline="Spotted a problem? Let's improve it."
+          cta="Let's solve a problem"
+          variant="better"
+        />
+      </div>
 
-        <footer className="mt-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-slate-100 pt-6 text-xs text-slate-600">
-          <TrustItem
-            icon={
-              <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden>
-                <circle
-                  cx={12}
-                  cy={12}
-                  r={10}
-                  fill="none"
-                  stroke="#1A5AD7"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M8 12.5 11 15.5 16 9"
-                  fill="none"
-                  stroke="#1A5AD7"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            }
-            label="Free to start"
-          />
-          <span className="text-slate-200" aria-hidden>
-            ·
-          </span>
-          <TrustItem
-            icon={
-              <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden>
-                <rect
-                  x={5}
-                  y={11}
-                  width={14}
-                  height={10}
-                  rx={2}
-                  fill="none"
-                  stroke="#1A5AD7"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M8 11V8a4 4 0 0 1 8 0v3"
-                  fill="none"
-                  stroke="#1A5AD7"
-                  strokeWidth="1.5"
-                />
-              </svg>
-            }
-            label="Private by default"
-          />
-          <span className="text-slate-200" aria-hidden>
-            ·
-          </span>
-          <TrustItem
-            icon={
-              <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden>
-                <path
-                  d="M12 20 C12 20 4 13 4 8.5 C 4 5.5 6.5 3 9.5 3 C 11 3 12 3.8 12 3.8 C 12 3.8 13 3 14.5 3 C 17.5 3 20 5.5 20 8.5 C 20 13 12 20 12 20 Z"
-                  fill="#FACC15"
-                />
-              </svg>
-            }
-            label="No pressure"
-          />
-        </footer>
-      </main>
-      <Nav />
-    </div>
+      <TrustBar />
+    </PageShell>
   );
 }
 
-function TrustItem({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
+function WavyUnderline() {
   return (
-    <span className="inline-flex items-center gap-1.5">
-      {icon}
-      {label}
-    </span>
+    <svg
+      className="absolute -bottom-1 left-0 w-full"
+      height={6}
+      viewBox="0 0 80 6"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <path
+        d="M0 4 Q10 0 20 4 T40 4 T60 3 T80 4"
+        fill="none"
+        stroke="#FACC15"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function TrustBar() {
+  return (
+    <footer className="mt-10 rounded-2xl bg-sky-50 px-3 py-4">
+      <ul className="flex flex-col items-center gap-3 text-xs font-medium text-slate-700">
+        <li className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-bluenana text-white">
+            <svg width={12} height={12} viewBox="0 0 12 12" aria-hidden>
+              <path
+                d="M2 6 L5 9 L10 3"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          Free to start
+        </li>
+        <li className="flex items-center gap-2">
+          <svg width={16} height={16} viewBox="0 0 24 24" className="text-bluenana" aria-hidden>
+            <path
+              fill="currentColor"
+              d="M8 10V8a4 4 0 1 1 8 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2 0h4V8a2 2 0 1 0-4 0v2z"
+            />
+          </svg>
+          Private by default
+        </li>
+        <li className="flex items-center gap-2">
+          <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden>
+            <path
+              d="M12 20 C12 20 4 13 4 8.5 C 4 5.5 6.5 3 9.5 3 C 11 3 12 3.8 12 3.8 C 12 3.8 13 3 14.5 3 C 17.5 3 20 5.5 20 8.5 C 20 13 12 20 12 20 Z"
+              fill="#FACC15"
+            />
+          </svg>
+          No pressure
+        </li>
+      </ul>
+    </footer>
   );
 }
 
@@ -178,11 +150,7 @@ function PathCard({
   );
 }
 
-function CardIcon({
-  variant,
-}: {
-  variant: "heart" | "bulb";
-}) {
+function CardIcon({ variant }: { variant: "heart" | "bulb" }) {
   if (variant === "heart") {
     return (
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-bluenana/10">

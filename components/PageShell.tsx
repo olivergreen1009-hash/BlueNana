@@ -23,10 +23,10 @@ export function PageShell({
 }: PageShellProps) {
   return (
     <div className={`flex min-h-full flex-1 flex-col bg-white ${className}`}>
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 pb-28 pt-5">
+      <main className="mx-auto flex w-full max-w-[26rem] flex-1 flex-col px-5 pb-28 pt-4">
         {showLogo ? (
-          <div className="mb-4 flex items-start justify-between gap-3">
-            <div>
+          <div className="mb-6 flex items-center justify-center">
+            <div className="text-center">
               <Logo />
               {logoSubtitle ? (
                 <p className="mt-0.5 text-xs text-slate-500">{logoSubtitle}</p>
