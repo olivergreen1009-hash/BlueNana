@@ -53,6 +53,7 @@ export function Banana({
       <BananaGraphic
         variant={resolved}
         showHeart={heart}
+        showFace
         className="drop-shadow-[0_4px_12px_rgba(26,90,215,0.18)]"
       />
       {remark ? (

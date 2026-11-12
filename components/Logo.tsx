@@ -17,7 +17,7 @@ export function Logo({
       className={`inline-flex items-center gap-2 ${className}`}
       aria-label="BlueNana home"
     >
-      <BananaGraphic variant="logo" showHeart />
+      <BananaGraphic variant="logo" showHeart showFace />
       {showWordmark ? (
         <span className="text-lg font-bold tracking-tight text-bluenana">
           BlueNana
