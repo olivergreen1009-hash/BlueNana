@@ -185,6 +185,33 @@ export const MIX_STUFF = [
   "Backpack",
 ] as const;
 
+export const MIX_ANIMAL_EMOJI: Record<(typeof MIX_ANIMALS)[number], string> = {
+  Penguin: "🐧",
+  Owl: "🦉",
+  Elephant: "🐘",
+  Crocodile: "🐊",
+  Octopus: "🐙",
+  Giraffe: "🦒",
+  Snail: "🐌",
+  Kangaroo: "🦘",
+  Bunny: "🐰",
+  Fox: "🦊",
+  "Bear Cub": "🐻",
+  Puppy: "🐶",
+  Kitten: "🐱",
+};
+
+export const MIX_STUFF_EMOJI: Record<(typeof MIX_STUFF)[number], string> = {
+  Teapot: "🫖",
+  Flashlight: "🔦",
+  Umbrella: "☂️",
+  "Vacuum Cleaner": "🧹",
+  "Garden Hose": "💧",
+  Balloon: "🎈",
+  Skateboard: "🛹",
+  Backpack: "🎒",
+};
+
 const GENERIC_TINY_ACTION =
   "Do something small and kind that your Mix and Bump character might do.";
 
@@ -222,6 +249,19 @@ export function resolveMixPair(animal: string, stuff: string): MixPair {
 
 export function pairComboLabel(pair: MixPair): string {
   return `${pair.animal} + ${pair.stuff}`;
+}
+
+export function emojiForAnimal(animal: string): string {
+  return (
+    MIX_ANIMAL_EMOJI[animal as (typeof MIX_ANIMALS)[number]] ?? "🐾"
+  );
+}
+
+export function emojiForStuff(stuff: string): string {
+  const normalized = stuff === "Vacuum" ? "Vacuum Cleaner" : stuff;
+  return (
+    MIX_STUFF_EMOJI[normalized as (typeof MIX_STUFF)[number]] ?? "📦"
+  );
 }
 
 export function randomComboIndex(

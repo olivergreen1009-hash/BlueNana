@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { MixPairCard } from "@/components/MixPairCard";
 import { PageShell } from "@/components/PageShell";
 import { PrivacyHint } from "@/components/PrivacyHint";
 import { Toast } from "@/components/Toast";
 import { TryReflectionModal } from "@/components/TryReflectionModal";
 import {
   nextStarterIndex,
-  pairComboLabel,
   starterPairAt,
   winTextForPair,
   type MixPair,
@@ -58,14 +58,7 @@ export default function MixPage() {
 
       <MixDivider />
 
-      <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-        <p className="text-xs font-semibold uppercase tracking-wide text-bluenana">
-          Animal + Stuff
-        </p>
-        <p className="mt-1 text-lg font-bold text-slate-900">
-          {pairComboLabel(pair)}
-        </p>
-      </article>
+      <MixPairCard pair={pair} />
 
       <label className="mt-4 block">
         <span className="text-sm font-medium text-slate-700">
