@@ -3,88 +3,96 @@
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { PageShell } from "@/components/PageShell";
-import { IconCheck, IconLock } from "@/components/icons";
-import { getLittleWins, subscribeStorage } from "@/lib/storage";
+import {
+  formatDisplayDate,
+  getLittleWins,
+  subscribeStorage,
+} from "@/lib/storage";
 
 export default function WinsPage() {
   const wins = useSyncExternalStore(subscribeStorage, getLittleWins, () => []);
 
   return (
-    <PageShell
-      header="wins"
-      showLogo={false}
-      helpSlot={
+    <PageShell showBanana bananaSize="sm">
+      <div className="flex items-center justify-between gap-3">
+        <div className="w-9 shrink-0" aria-hidden />
+        <h1 className="flex-1 text-center text-xl font-bold text-bluenana">
+          My Little Wins
+        </h1>
         <span
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-sky-200 text-[#1A5AD7]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-bluenana/30 text-bluenana"
           aria-label="Private"
         >
-          <IconLock size={18} />
+          <svg width={18} height={18} viewBox="0 0 24 24" aria-hidden>
+            <rect
+              x={5}
+              y={11}
+              width={14}
+              height={10}
+              rx={2}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M8 11V8a4 4 0 0 1 8 0v3"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+          </svg>
         </span>
-      }
-    >
-      <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-        <h2 className="text-lg font-bold text-[#1A5AD7]">Private timeline</h2>
+      </div>
+
+      <article className="mt-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
+        <h2 className="text-base font-bold text-bluenana">Private timeline</h2>
         <p className="mt-1 text-sm text-slate-500">
           Your wins. Your growth. Private to you.
         </p>
 
         {wins.length === 0 ? (
-          <div className="mt-10 text-center">
+          <div className="mt-8 text-center">
             <p className="text-slate-600">No wins logged yet.</p>
             <Link
               href="/good"
-              className="mt-3 inline-block font-medium text-[#1A5AD7]"
+              className="mt-3 inline-block font-medium text-bluenana"
             >
               Try a little good →
             </Link>
           </div>
         ) : (
-          <ol className="relative mt-8 space-y-0 pl-2">
-            <span
-              className="absolute bottom-4 left-[1.15rem] top-4 w-0.5 bg-sky-200"
-              aria-hidden
-            />
-            {wins.map((win, i) => (
+          <ol className="relative mt-6 border-s border-bluenana/30 pl-5">
+            {wins.map((win, idx) => (
               <li
                 key={win.id}
-                className={`relative flex items-start gap-4 py-4 ${
-                  i < wins.length - 1 ? "border-b border-slate-100" : ""
+                className={`relative pb-5 last:pb-0 ${
+                  idx < wins.length - 1 ? "border-b border-slate-100 mb-5" : ""
                 }`}
               >
-                <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1A5AD7] text-white">
-                  <IconCheck size={16} />
+                <span
+                  className="absolute -left-[1.6rem] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-bluenana text-[10px] text-white"
+                  aria-hidden
+                >
+                  ✓
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold leading-snug text-slate-900">
-                      {win.text}
-                    </p>
-                    <time className="shrink-0 text-xs font-medium text-[#1A5AD7]">
-                      {formatDisplayDateShort(win.completedAt)}
-                    </time>
-                  </div>
-                  {win.reflection ? (
-                    <p className="mt-1 text-xs italic text-slate-500">
-                      {win.reflection}
-                    </p>
-                  ) : null}
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm leading-relaxed text-slate-800">
+                    {win.text}
+                  </p>
+                  <time className="shrink-0 text-xs font-medium text-bluenana">
+                    {formatDisplayDate(win.completedAt)}
+                  </time>
                 </div>
+                {win.reflection ? (
+                  <p className="mt-1 text-xs italic text-slate-500">
+                    {win.reflection}
+                  </p>
+                ) : null}
               </li>
             ))}
           </ol>
         )}
-      </section>
+      </article>
     </PageShell>
   );
-}
-
-function formatDisplayDateShort(iso: string): string {
-  try {
-    return new Intl.DateTimeFormat(undefined, {
-      month: "short",
-      day: "numeric",
-    }).format(new Date(iso));
-  } catch {
-    return iso.slice(5, 10);
-  }
 }

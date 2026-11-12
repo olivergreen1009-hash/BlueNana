@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PageShell } from "@/components/PageShell";
-import { IconHelp, IconLightbulbOutline, IconPeople } from "@/components/icons";
 import { INSPIRATION_STARTERS, WHO_AFFECTS_LABELS } from "@/lib/prompts";
 import {
   setBetterProblem,
@@ -18,13 +17,11 @@ const WHO_OPTIONS: WhoAffects[] = [
   "other",
 ];
 
-const PROBLEM_MAX = 200;
-
 export default function BetterPage() {
   const router = useRouter();
   const [problem, setProblem] = useState("");
   const [who, setWho] = useState<WhoAffects | "">("");
-  const [showInspiration, setShowInspiration] = useState(false);
+  const maxLen = 200;
 
   const continueNext = () => {
     const trimmed = problem.trim();
@@ -35,63 +32,38 @@ export default function BetterPage() {
   };
 
   return (
-    <PageShell
-      header="better"
-      showLogo={false}
-      helpSlot={
-        <button
-          type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-sky-200 text-[#1A5AD7]"
-          aria-label="Help"
-        >
-          <IconHelp size={20} />
-        </button>
-      }
-    >
-      <h1 className="text-xl font-bold leading-snug text-slate-900">
+    <PageShell showBanana bananaSize="sm">
+      <h1 className="text-lg font-bold text-slate-900">
         What&apos;s a small frustration you&apos;ve noticed?
       </h1>
 
-      <label className="relative mt-5 block">
+      <label className="mt-5 block">
         <textarea
           value={problem}
-          onChange={(e) =>
-            setProblem(e.target.value.slice(0, PROBLEM_MAX))
-          }
-          rows={5}
-          placeholder="Type your frustration here..."
-          className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-800 outline-none focus:ring-2 focus:ring-sky-200"
+          onChange={(e) => setProblem(e.target.value.slice(0, maxLen))}
+          rows={4}
+          placeholder="Type your frustration here…"
+          className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-800 shadow-sm outline-none focus:ring-2 focus:ring-bluenana/30"
         />
-        <span className="pointer-events-none absolute bottom-3 right-3 text-xs text-slate-400">
-          {problem.length}/{PROBLEM_MAX}
+        <span className="mt-1 block text-right text-xs text-slate-400">
+          {problem.length}/{maxLen}
         </span>
       </label>
 
-      <button
-        type="button"
-        onClick={() => setShowInspiration((v) => !v)}
-        className="mt-4 flex w-full items-start gap-2 text-left"
-      >
-        <IconLightbulbOutline
-          size={22}
-          className="mt-0.5 shrink-0 text-[#1A5AD7]"
-        />
-        <span>
-          <span className="font-semibold text-[#1A5AD7]">Need inspiration?</span>
-          <span className="mt-1 block text-sm text-slate-500">
-            Think about daily tasks, moments, or situations that feel harder than
-            they should.
-          </span>
-        </span>
-      </button>
-
-      {showInspiration ? (
-        <ul className="mt-2 space-y-1 rounded-xl border border-sky-100 bg-sky-50/50 p-3 text-sm text-slate-600">
-          {INSPIRATION_STARTERS.map((line) => (
+      <div className="mt-3 rounded-xl border border-bluenana/15 bg-[#EEF4FD]/60 px-3 py-3">
+        <p className="flex items-center gap-2 text-sm font-medium text-bluenana">
+          <span aria-hidden>💡</span> Need inspiration?
+        </p>
+        <p className="mt-1 text-sm text-slate-600">
+          Think about daily tasks, moments, or situations that feel harder than
+          they should.
+        </p>
+        <ul className="mt-2 space-y-1 text-sm text-slate-600">
+          {INSPIRATION_STARTERS.slice(0, 3).map((line) => (
             <li key={line}>
               <button
                 type="button"
-                className="text-left hover:text-[#1A5AD7]"
+                className="text-left hover:text-bluenana"
                 onClick={() => setProblem(line)}
               >
                 {line}
@@ -99,39 +71,36 @@ export default function BetterPage() {
             </li>
           ))}
         </ul>
-      ) : null}
+      </div>
 
       <fieldset className="mt-6">
-        <legend className="mb-3 flex items-center gap-2 text-sm font-bold text-slate-800">
-          <IconPeople size={18} className="text-[#1A5AD7]" />
-          Who it affects:
+        <legend className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+          <span aria-hidden>👥</span> Who it affects
         </legend>
-        <div className="flex flex-col gap-2">
+        <div className="mt-3 flex flex-col gap-2">
           {WHO_OPTIONS.map((option) => {
             const active = who === option;
-            const id = `who-${option}`;
             return (
-              <label
+              <button
                 key={option}
-                htmlFor={id}
-                className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition ${
+                type="button"
+                onClick={() => setWho(option)}
+                className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
                   active
-                    ? "border-[#1A5AD7] bg-sky-50/50"
-                    : "border-slate-200 bg-white hover:border-sky-200"
+                    ? "border-bluenana bg-bluenana/5 text-bluenana ring-1 ring-bluenana/30"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                 }`}
               >
-                <input
-                  id={id}
-                  type="radio"
-                  name="who"
-                  checked={active}
-                  onChange={() => setWho(option)}
-                  className="h-4 w-4 accent-[#1A5AD7]"
+                <span
+                  className={`h-4 w-4 shrink-0 rounded-full border-2 ${
+                    active
+                      ? "border-bluenana bg-bluenana"
+                      : "border-slate-300"
+                  }`}
+                  aria-hidden
                 />
-                <span className="text-sm font-medium text-slate-800">
-                  {WHO_AFFECTS_LABELS[option]}
-                </span>
-              </label>
+                {WHO_AFFECTS_LABELS[option]}
+              </button>
             );
           })}
         </div>
@@ -141,10 +110,9 @@ export default function BetterPage() {
         type="button"
         disabled={!problem.trim() || !who}
         onClick={continueNext}
-        className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-[#FACC15] px-4 py-3.5 text-sm font-bold text-slate-900 shadow-sm disabled:opacity-40 hover:bg-[#eab308]"
+        className="mt-8 w-full rounded-xl bg-[#FACC15] px-4 py-3.5 text-sm font-semibold text-slate-900 shadow-sm disabled:opacity-40 hover:bg-[#EAB308]"
       >
-        Continue to solutions
-        <span aria-hidden>→</span>
+        Continue to solutions →
       </button>
     </PageShell>
   );

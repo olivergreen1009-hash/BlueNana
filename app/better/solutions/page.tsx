@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Banana } from "@/components/Banana";
 import { PageShell } from "@/components/PageShell";
-import { IconBack, IconHelp, IconInfo } from "@/components/icons";
 import { IMPROVEMENT_SOLUTIONS } from "@/lib/prompts";
 import {
   addSavedIdea,
@@ -39,6 +38,7 @@ export default function SolutionsPage() {
   const [pairIds, setPairIds] = useState<[string, string]>(() =>
     pickPair(IMPROVEMENT_SOLUTIONS),
   );
+  const [selected, setSelected] = useState<string | null>(null);
   const [savedToast, setSavedToast] = useState(false);
 
   useEffect(() => {
@@ -53,56 +53,35 @@ export default function SolutionsPage() {
     [pairIds],
   );
 
-  const [cardOne, cardTwo] = shownSolutions;
+  const selectedSolution = shownSolutions.find((s) => s.id === selected);
 
   const anotherPair = useCallback(() => {
     setPairIds((prev) => pickPair(IMPROVEMENT_SOLUTIONS, prev[0]));
+    setSelected(null);
     setSavedToast(false);
   }, []);
 
-  const tryImprovement = (solution: (typeof IMPROVEMENT_SOLUTIONS)[number]) => {
-    if (!problem) return;
-    const text = `${problem} — ${solution.title}: ${solution.description}`;
-    setBetterSolution(solution.id);
+  const tryImprovement = () => {
+    if (!selectedSolution || !problem) return;
+    const text = `${problem} — ${selectedSolution.title}: ${selectedSolution.description}`;
+    setBetterSolution(selectedSolution.id);
     setBetterAttempt(text);
     router.push("/better/reflect");
   };
 
   if (!problem) {
     return (
-      <PageShell header="solutions" showLogo={false}>
+      <PageShell showBanana bananaSize="sm">
         <p className="text-center text-slate-600">Loading…</p>
       </PageShell>
     );
   }
 
   return (
-    <PageShell
-      header="solutions"
-      showLogo={false}
-      backSlot={
-        <Link
-          href="/better"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600"
-          aria-label="Back"
-        >
-          <IconBack />
-        </Link>
-      }
-      helpSlot={
-        <button
-          type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600"
-          aria-label="Help"
-        >
-          <IconHelp size={20} />
-        </button>
-      }
-    >
-      <div className="mb-4 flex justify-center">
-        <Banana size="lg" variant="horizontal" />
+    <PageShell showLogo={false}>
+      <div className="mb-2 flex justify-center">
+        <Banana size="md" />
       </div>
-
       <h1 className="text-center text-xl font-bold text-slate-900">
         Explore solutions
       </h1>
@@ -110,85 +89,100 @@ export default function SolutionsPage() {
         Let&apos;s look at ways to make this better.
       </p>
 
-      <section className="mt-6 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900">
-          <IconInfo className="text-[#1A5AD7]" />
+      <article className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <p className="flex items-center gap-2 text-sm font-semibold text-bluenana">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-bluenana text-[10px] font-bold text-white">
+            i
+          </span>
           Problem summary
-        </h2>
-        <div className="mt-3 rounded-xl bg-sky-50 px-4 py-3">
-          <p className="text-sm font-semibold text-[#1A5AD7]">{problem}</p>
-          <p className="mt-1 text-xs text-slate-500">
-            This comes up when there are lots of choices and little time.
-          </p>
-        </div>
-      </section>
+        </p>
+        <p className="mt-3 rounded-xl bg-[#EEF4FD] px-3 py-3 text-sm leading-relaxed text-slate-800">
+          <span className="font-semibold text-slate-900">{problem}</span>
+        </p>
+      </article>
 
-      <h3 className="mt-6 text-base font-bold text-slate-900">
+      <h2 className="mt-6 text-sm font-bold text-slate-900">
         Improvement ideas to test
-      </h3>
-      <p className="text-sm text-slate-500">
-        Pick one to try. You can change it anytime.
-      </p>
+      </h2>
+      <p className="text-xs text-slate-500">Pick one to try. You can change it anytime.</p>
 
-      {cardOne ? (
-        <article className="mt-4 rounded-2xl border-2 border-[#1A5AD7] bg-sky-50/60 p-4">
-          <div className="flex items-start gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1A5AD7] text-sm font-bold text-white">
-              1
-            </span>
-            <div className="min-w-0">
-              <p className="font-bold text-slate-900">{cardOne.title}</p>
-              <p className="mt-1 text-sm text-slate-600">{cardOne.description}</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => tryImprovement(cardOne)}
-            className="mt-4 w-full rounded-xl bg-[#1A5AD7] py-3 text-sm font-semibold text-white hover:bg-[#1550c4]"
-          >
-            Try this improvement
-          </button>
-        </article>
-      ) : null}
-
-      {cardTwo ? (
-        <article className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-          <div className="flex items-start gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FACC15] text-sm font-bold text-white">
-              2
-            </span>
-            <div className="min-w-0">
-              <p className="font-bold text-slate-900">{cardTwo.title}</p>
-              <p className="mt-1 text-sm text-slate-600">{cardTwo.description}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <button
-              type="button"
-              onClick={anotherPair}
-              className="flex-1 rounded-xl border-2 border-[#1A5AD7] py-2.5 text-sm font-semibold text-[#1A5AD7] hover:bg-sky-50"
-            >
-              Another idea
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                addSavedIdea(`${problem} — ${cardTwo.title}`, "better");
-                setSavedToast(true);
-              }}
-              className="flex-1 rounded-xl border-2 border-[#FACC15] py-2.5 text-sm font-semibold text-amber-700 hover:bg-yellow-50"
-            >
-              Save my idea
-            </button>
-          </div>
-        </article>
-      ) : null}
+      <ul className="mt-4 flex flex-col gap-3">
+        {shownSolutions.map((s, idx) => {
+          const active = selected === s.id;
+          return (
+            <li key={s.id}>
+              <button
+                type="button"
+                onClick={() => setSelected(s.id)}
+                className={`w-full rounded-2xl border p-4 text-left transition ${
+                  active
+                    ? "border-bluenana bg-[#EEF4FD] ring-1 ring-bluenana/30"
+                    : "border-slate-200 bg-white hover:border-slate-300"
+                }`}
+              >
+                <span
+                  className={`mb-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white ${
+                    idx === 0 ? "bg-bluenana" : "bg-[#FACC15] text-slate-900"
+                  }`}
+                >
+                  {idx + 1}
+                </span>
+                <p className="font-semibold text-slate-900">{s.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                  {s.description}
+                </p>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
 
       {savedToast ? (
-        <p className="mt-4 text-center text-sm text-[#1A5AD7]">
+        <p className="mt-4 text-center text-sm text-bluenana">
           Saved to Ideas—you can find it anytime in the nav.
         </p>
       ) : null}
+
+      <div className="mt-6 flex flex-col gap-2">
+        <button
+          type="button"
+          disabled={!selectedSolution}
+          onClick={tryImprovement}
+          className="w-full rounded-xl bg-bluenana px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-40 hover:bg-bluenana-dark"
+        >
+          Try this improvement
+        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={anotherPair}
+            className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-bluenana ring-1 ring-bluenana/30 hover:bg-slate-50"
+          >
+            Another idea
+          </button>
+          <button
+            type="button"
+            disabled={!selectedSolution}
+            onClick={() => {
+              if (!selectedSolution) return;
+              addSavedIdea(
+                `${problem} — ${selectedSolution.title}`,
+                "better",
+              );
+              setSavedToast(true);
+            }}
+            className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-800 ring-2 ring-[#FACC15] disabled:opacity-40 hover:bg-slate-50"
+          >
+            Save my idea
+          </button>
+        </div>
+        <Link
+          href="/better"
+          className="py-2 text-center text-sm text-slate-500 hover:text-slate-700"
+        >
+          ← Edit problem
+        </Link>
+      </div>
     </PageShell>
   );
 }

@@ -2,20 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState, type ComponentType } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { SuggestionCard } from "@/components/SuggestionCard";
-import {
-  IconBattery,
-  IconClock,
-  IconHeart,
-  IconPencil,
-  IconPeople,
-  IconPerson,
-  IconRefresh,
-  IconSparkles,
-  IconTag,
-} from "@/components/icons";
 import {
   FILTER_LABELS,
   FILTERS,
@@ -23,17 +12,6 @@ import {
   promptsForFilter,
 } from "@/lib/prompts";
 import { addLittleWin, addSavedIdea } from "@/lib/storage";
-
-const FILTER_ICONS: Record<
-  Exclude<KindnessFilter, "all">,
-  ComponentType<{ className?: string; size?: number }>
-> = {
-  five_min: IconClock,
-  low_energy: IconBattery,
-  free: IconTag,
-  solo: IconPerson,
-  together: IconPeople,
-};
 
 function nextUnshownIndex(
   poolSize: number,
@@ -51,6 +29,15 @@ function nextUnshownIndex(
   }
   return remaining[Math.floor(Math.random() * remaining.length)] ?? 0;
 }
+
+const FILTER_ICONS: Record<KindnessFilter, string> = {
+  all: "✦",
+  five_min: "⏱",
+  low_energy: "🔋",
+  free: "◎",
+  solo: "👤",
+  together: "👥",
+};
 
 export default function GoodPage() {
   const router = useRouter();
@@ -83,9 +70,9 @@ export default function GoodPage() {
 
   if (!current) {
     return (
-      <PageShell header="good">
+      <PageShell showBanana bananaSize="sm" logoSubtitle="Do a Little Good">
         <p className="text-center text-slate-600">No prompts in this filter.</p>
-        <Link href="/" className="mt-4 text-center text-[#1A5AD7]">
+        <Link href="/" className="mt-4 block text-center text-bluenana">
           ← Home
         </Link>
       </PageShell>
@@ -93,74 +80,77 @@ export default function GoodPage() {
   }
 
   return (
-    <PageShell header="good" showLogo={false}>
-      <div className="relative mb-6 flex items-center justify-center">
-        <h1 className="text-center text-xl font-bold text-[#1A5AD7]">
-          Do a Little Good
-        </h1>
-        <span className="absolute left-0 right-0 top-1/2 -z-10 h-px bg-sky-100" aria-hidden />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white px-2">
-          <IconHeart size={18} className="text-[#1A5AD7]" />
+    <PageShell
+      showBanana
+      bananaSize="sm"
+      logoSubtitle="Do a Little Good"
+    >
+      <h1 className="text-center text-xl font-bold text-bluenana">
+        Do a Little Good
+      </h1>
+      <div className="relative my-4 flex items-center justify-center">
+        <div className="h-px w-full bg-slate-200" />
+        <span className="absolute flex h-8 w-8 items-center justify-center rounded-full bg-white">
+          <svg width={18} height={18} viewBox="0 0 24 24" aria-hidden>
+            <path
+              d="M12 20 C12 20 4 13 4 8.5 C 4 5.5 6.5 3 9.5 3 C 11 3 12 3.8 12 3.8 C 12 3.8 13 3 14.5 3 C 17.5 3 20 5.5 20 8.5 C 20 13 12 20 12 20 Z"
+              fill="#1A5AD7"
+            />
+          </svg>
         </span>
       </div>
 
       <div className="mb-5 flex flex-wrap justify-center gap-2">
-        {FILTERS.map((f) => {
-          const FIcon = FILTER_ICONS[f as Exclude<KindnessFilter, "all">];
-          const active = filter === f;
-          return (
-            <button
-              key={f}
-              type="button"
-              onClick={() => resetForFilter(f)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-                active
-                  ? "border-[#1A5AD7] bg-[#1A5AD7] text-white"
-                  : "border-sky-200 bg-white text-[#1A5AD7] hover:bg-sky-50"
-              }`}
-            >
-              <FIcon size={14} />
-              {FILTER_LABELS[f]}
-            </button>
-          );
-        })}
+        {FILTERS.filter((f) => f !== "all").map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => resetForFilter(f)}
+            className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+              filter === f
+                ? "bg-bluenana text-white"
+                : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            <span className="text-xs" aria-hidden>
+              {FILTER_ICONS[f]}
+            </span>
+            {FILTER_LABELS[f]}
+          </button>
+        ))}
       </div>
 
       <SuggestionCard body={current.text} />
 
       {toast ? (
-        <p className="mt-4 rounded-xl bg-sky-50 px-3 py-2 text-center text-sm text-[#1A5AD7] ring-1 ring-sky-100">
+        <p className="mt-4 rounded-xl bg-[#EEF4FD] px-3 py-2 text-center text-sm text-bluenana ring-1 ring-bluenana/10">
           {toast}
         </p>
       ) : null}
 
-      <div className="mt-6 flex flex-col gap-2.5">
+      <div className="mt-6 flex flex-col gap-2">
         <ActionButton
           primary
           onClick={() => {
             addLittleWin(current.text, "good");
             setToast("Nice—you logged this in My Little Wins.");
           }}
-          icon={<IconSparkles size={18} />}
         >
-          Try this
+          ✨ Try this
         </ActionButton>
-        <ActionButton onClick={anotherIdea} icon={<IconRefresh size={18} />}>
-          Another idea
-        </ActionButton>
+        <ActionButton onClick={anotherIdea}>↻ Another idea</ActionButton>
         <ActionButton
           onClick={() => {
             addSavedIdea(current.text, "good");
             setToast("Saved to Ideas for when you're ready.");
           }}
-          icon={<IconPencil size={18} />}
         >
-          Make it my own
+          ✎ Make it my own
         </ActionButton>
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="mt-1 w-full py-2 text-center text-sm text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-slate-700"
+          className="mt-1 w-full py-2 text-center text-sm font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
         >
           Not today
         </button>
@@ -173,24 +163,21 @@ function ActionButton({
   children,
   onClick,
   primary,
-  icon,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   primary?: boolean;
-  icon?: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-center gap-2 rounded-full px-4 py-3.5 text-sm font-semibold transition ${
+      className={`w-full rounded-xl px-4 py-3.5 text-sm font-semibold transition ${
         primary
-          ? "bg-[#1A5AD7] text-white hover:bg-[#1550c4]"
-          : "border-2 border-[#1A5AD7] bg-white text-[#1A5AD7] hover:bg-sky-50"
+          ? "bg-bluenana text-white hover:bg-bluenana-dark"
+          : "bg-white text-bluenana ring-1 ring-bluenana/25 hover:bg-slate-50"
       }`}
     >
-      {icon}
       {children}
     </button>
   );
