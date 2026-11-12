@@ -11,14 +11,16 @@ const REMARKS = [
 ];
 
 type BananaProps = {
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
   allowRemark?: boolean;
   className?: string;
 };
 
+const SIZES = { sm: 44, md: 64, lg: 112 } as const;
+
 export function Banana({
   size = "md",
-  allowRemark = true,
+  allowRemark = false,
   className = "",
 }: BananaProps) {
   const [remark, setRemark] = useState<string | null>(null);
@@ -33,10 +35,10 @@ export function Banana({
     return () => cancelAnimationFrame(frame);
   }, [allowRemark]);
 
-  const dim = size === "sm" ? 40 : 56;
+  const dim = SIZES[size];
 
   return (
-    <div className={`flex flex-col items-center gap-1 ${className}`}>
+    <div className={`flex flex-col items-center gap-2 ${className}`}>
       <svg
         width={dim}
         height={dim}
@@ -44,17 +46,27 @@ export function Banana({
         aria-hidden
         className="shrink-0 drop-shadow-sm"
       >
-        <ellipse cx="32" cy="34" rx="22" ry="26" fill="#FFE566" />
         <path
-          d="M32 8 C38 4 48 6 50 14 C44 12 36 14 32 20 Z"
-          fill="#4DA3FF"
+          d="M10 36 C10 16 26 6 44 12 C56 16 54 34 42 46 C30 56 14 52 10 36 Z"
+          fill="#3B8FE8"
         />
-        <ellipse cx="26" cy="30" rx="3" ry="4" fill="#C9A227" opacity="0.35" />
-        <ellipse cx="36" cy="38" rx="2.5" ry="3" fill="#C9A227" opacity="0.3" />
-        <ellipse cx="40" cy="28" rx="2" ry="2.5" fill="#C9A227" opacity="0.25" />
+        <path
+          d="M44 10 C50 6 56 8 58 14 C54 12 48 13 44 18 Z"
+          fill="#2B7AD4"
+        />
+        <path
+          d="M20 32 Q26 26 32 32"
+          stroke="#1e4a7a"
+          strokeWidth="2.2"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <ellipse cx="24" cy="26" rx="2.2" ry="2.8" fill="#1e4a7a" />
+        <ellipse cx="36" cy="26" rx="2.2" ry="2.8" fill="#1e4a7a" />
+        <ellipse cx="28" cy="40" rx="3" ry="2" fill="#FFE566" opacity="0.35" />
       </svg>
       {remark ? (
-        <p className="max-w-[12rem] text-center text-xs text-sky-800/80 italic">
+        <p className="max-w-[14rem] text-center text-xs text-sky-800/80 italic">
           {remark}
         </p>
       ) : null}

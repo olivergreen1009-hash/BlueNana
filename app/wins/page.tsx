@@ -13,16 +13,19 @@ export default function WinsPage() {
   const wins = useSyncExternalStore(subscribeStorage, getLittleWins, () => []);
 
   return (
-    <PageShell showBanana={false}>
+    <PageShell showBanana bananaSize="sm">
       <h1 className="text-xl font-bold text-sky-950">My Little Wins</h1>
       <p className="mt-1 text-sm text-slate-500">
-        A private timeline of attempts—only things you tried.
+        A private timeline of what you tried—no scores, no rankings.
       </p>
 
       {wins.length === 0 ? (
         <div className="mt-10 text-center">
           <p className="text-slate-600">No wins logged yet.</p>
-          <Link href="/good" className="mt-3 inline-block text-sky-700">
+          <Link
+            href="/good"
+            className="mt-3 inline-block font-medium text-sky-700"
+          >
             Try a little good →
           </Link>
         </div>
@@ -40,8 +43,15 @@ export default function WinsPage() {
               <p className="mt-1 text-sm leading-relaxed text-slate-800">
                 {win.text}
               </p>
+              {win.reflection ? (
+                <p className="mt-1 text-xs italic text-slate-500">
+                  {win.reflection}
+                </p>
+              ) : null}
               <span className="mt-1 inline-block text-xs text-slate-500">
-                {win.kind === "good" ? "Do a Little Good" : "Make Something Better"}
+                {win.kind === "good"
+                  ? "Do a Little Good"
+                  : "Make Something Better"}
               </span>
             </li>
           ))}

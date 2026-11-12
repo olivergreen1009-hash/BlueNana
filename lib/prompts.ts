@@ -1,63 +1,79 @@
-export type KindnessFilter = "all" | "people" | "places" | "everyday";
+export type KindnessFilter =
+  | "all"
+  | "five_min"
+  | "low_energy"
+  | "free"
+  | "solo"
+  | "together";
 
 export type KindnessPrompt = {
   text: string;
-  filter: Exclude<KindnessFilter, "all">;
+  tags: Exclude<KindnessFilter, "all">[];
 };
 
 export const KINDNESS_PROMPTS: KindnessPrompt[] = [
   {
     text: "Send a genuine thank-you to someone whose work often goes unnoticed.",
-    filter: "people",
+    tags: ["five_min", "low_energy", "free", "solo"],
   },
   {
     text: "Hold the door and make eye contact with the person behind you.",
-    filter: "everyday",
+    tags: ["five_min", "low_energy", "free", "solo", "together"],
   },
   {
     text: "Text someone you haven't spoken to in a while and ask how they're really doing.",
-    filter: "people",
+    tags: ["five_min", "low_energy", "free", "solo"],
   },
   {
     text: "Leave a kind note for a neighbor or coworker.",
-    filter: "people",
+    tags: ["five_min", "low_energy", "free", "solo"],
   },
   {
     text: "Offer to help someone carry something heavy.",
-    filter: "everyday",
+    tags: ["five_min", "free", "solo", "together"],
   },
   {
     text: "Compliment a stranger's effort (not just their appearance).",
-    filter: "people",
+    tags: ["five_min", "low_energy", "free", "solo", "together"],
   },
   {
     text: "Let someone go ahead of you in line.",
-    filter: "everyday",
+    tags: ["five_min", "low_energy", "free", "solo", "together"],
   },
   {
     text: "Share a useful resource or tip with someone who could use it.",
-    filter: "people",
+    tags: ["five_min", "low_energy", "free", "solo"],
   },
   {
     text: "Check on an older neighbor with a simple, no-pressure visit or call.",
-    filter: "people",
+    tags: ["five_min", "low_energy", "free", "solo", "together"],
   },
   {
     text: "Pick up litter in a small area you walk through regularly.",
-    filter: "places",
+    tags: ["five_min", "free", "solo"],
   },
 ];
 
 export const FILTER_LABELS: Record<KindnessFilter, string> = {
   all: "All",
-  people: "People",
-  places: "Places",
-  everyday: "Everyday",
+  five_min: "5 min",
+  low_energy: "Low energy",
+  free: "Free",
+  solo: "Solo",
+  together: "Together",
 };
+
+export const FILTERS: KindnessFilter[] = [
+  "five_min",
+  "low_energy",
+  "free",
+  "solo",
+  "together",
+];
 
 export function promptsForFilter(filter: KindnessFilter): KindnessPrompt[] {
   if (filter === "all") return KINDNESS_PROMPTS;
-  return KINDNESS_PROMPTS.filter((p) => p.filter === filter);
+  return KINDNESS_PROMPTS.filter((p) => p.tags.includes(filter));
 }
 
 export type ImprovementSolution = {
@@ -97,4 +113,21 @@ export const IMPROVEMENT_SOLUTIONS: ImprovementSolution[] = [
     description:
       "Share the problem with someone who might enjoy tackling it together.",
   },
+];
+
+export const WHO_AFFECTS_LABELS: Record<
+  "myself" | "someone" | "community" | "other",
+  string
+> = {
+  myself: "Myself",
+  someone: "Someone I know",
+  community: "My community",
+  other: "Other",
+};
+
+export const INSPIRATION_STARTERS = [
+  "The entryway always ends up cluttered by the door.",
+  "Our team meetings run long without clear next steps.",
+  "I never remember to drink water during a busy day.",
+  "The bus stop feels unsafe after dark.",
 ];

@@ -2,65 +2,96 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { PageShell } from "@/components/PageShell";
 import { IMPROVEMENT_SOLUTIONS } from "@/lib/prompts";
 import {
-  addLittleWin,
   addSavedIdea,
   getBetterProblem,
+  setBetterAttempt,
   setBetterSolution,
+  subscribeBetterSession,
 } from "@/lib/storage";
 
-function subscribeSession(onStoreChange: () => void): () => void {
-  const handler = () => onStoreChange();
-  window.addEventListener("pageshow", handler);
-  return () => window.removeEventListener("pageshow", handler);
+function pickPair(
+  pool: typeof IMPROVEMENT_SOLUTIONS,
+  avoid?: string,
+): [string, string] {
+  const ids = pool.map((s) => s.id);
+  const first =
+    ids.find((id) => id !== avoid) ?? ids[0] ?? IMPROVEMENT_SOLUTIONS[0].id;
+  const second =
+    ids.find((id) => id !== first && id !== avoid) ??
+    ids.find((id) => id !== first) ??
+    first;
+  return [first, second];
 }
 
 export default function SolutionsPage() {
   const router = useRouter();
   const problem = useSyncExternalStore(
-    subscribeSession,
+    subscribeBetterSession,
     getBetterProblem,
     () => "",
+  );
+  const [pairIds, setPairIds] = useState<[string, string]>(() =>
+    pickPair(IMPROVEMENT_SOLUTIONS),
   );
   const [selected, setSelected] = useState<string | null>(null);
   const [savedToast, setSavedToast] = useState(false);
 
   useEffect(() => {
-    if (!getBetterProblem()) router.replace("/better");
-  }, [router]);
+    if (!problem) router.replace("/better");
+  }, [problem, router]);
 
-  const selectedSolution = IMPROVEMENT_SOLUTIONS.find((s) => s.id === selected);
+  const shownSolutions = useMemo(
+    () =>
+      pairIds
+        .map((id) => IMPROVEMENT_SOLUTIONS.find((s) => s.id === id))
+        .filter(Boolean) as typeof IMPROVEMENT_SOLUTIONS,
+    [pairIds],
+  );
+
+  const selectedSolution = shownSolutions.find((s) => s.id === selected);
+
+  const anotherPair = useCallback(() => {
+    setPairIds((prev) => pickPair(IMPROVEMENT_SOLUTIONS, prev[0]));
+    setSelected(null);
+    setSavedToast(false);
+  }, []);
 
   const tryImprovement = () => {
     if (!selectedSolution || !problem) return;
     const text = `${problem} — ${selectedSolution.title}: ${selectedSolution.description}`;
     setBetterSolution(selectedSolution.id);
-    addLittleWin(text, "better");
+    setBetterAttempt(text);
     router.push("/better/reflect");
   };
 
+  if (!problem) {
+    return (
+      <PageShell showBanana bananaSize="sm">
+        <p className="text-center text-slate-600">Loading…</p>
+      </PageShell>
+    );
+  }
+
   return (
-    <PageShell showBanana={false}>
-      <div className="mb-2 flex items-center justify-between">
-        <Link href="/better" className="text-sm text-sky-700">
-          ← Back
-        </Link>
-        <h1 className="text-lg font-semibold text-sky-950">Explore solutions</h1>
-        <span className="w-12" />
-      </div>
+    <PageShell showBanana bananaSize="sm">
+      <p className="text-center text-xs font-medium uppercase tracking-wide text-sky-600">
+        Step 2 of 3
+      </p>
+      <h1 className="mt-2 text-center text-lg font-semibold text-sky-950">
+        Explore solutions
+      </h1>
 
-      {problem ? (
-        <p className="mb-4 rounded-xl bg-white px-3 py-2 text-sm text-slate-600 ring-1 ring-sky-100">
-          <span className="font-medium text-slate-800">You named: </span>
-          {problem}
-        </p>
-      ) : null}
+      <p className="mt-4 rounded-xl bg-sky-50 px-3 py-3 text-sm text-slate-700 ring-1 ring-sky-100">
+        <span className="font-medium text-slate-900">Your problem: </span>
+        {problem}
+      </p>
 
-      <ul className="flex flex-col gap-3">
-        {IMPROVEMENT_SOLUTIONS.map((s) => {
+      <ul className="mt-5 flex flex-col gap-3">
+        {shownSolutions.map((s) => {
           const active = selected === s.id;
           return (
             <li key={s.id}>
@@ -74,7 +105,9 @@ export default function SolutionsPage() {
                 }`}
               >
                 <p className="font-semibold text-slate-900">{s.title}</p>
-                <p className="mt-1 text-sm text-slate-600">{s.description}</p>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                  {s.description}
+                </p>
               </button>
             </li>
           );
@@ -82,7 +115,9 @@ export default function SolutionsPage() {
       </ul>
 
       {savedToast ? (
-        <p className="mt-4 text-center text-sm text-sky-800">Saved to Ideas.</p>
+        <p className="mt-4 text-center text-sm text-sky-800">
+          Saved to Ideas—you can find it anytime in the nav.
+        </p>
       ) : null}
 
       <div className="mt-6 flex flex-col gap-2">
@@ -90,22 +125,38 @@ export default function SolutionsPage() {
           type="button"
           disabled={!selectedSolution}
           onClick={tryImprovement}
-          className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
+          className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 hover:bg-sky-700"
         >
           Try this improvement
         </button>
         <button
           type="button"
-          disabled={!selectedSolution || !problem}
+          onClick={anotherPair}
+          className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-sky-900 ring-1 ring-sky-100 hover:bg-sky-50"
+        >
+          Another idea
+        </button>
+        <button
+          type="button"
+          disabled={!selectedSolution}
           onClick={() => {
             if (!selectedSolution) return;
-            addSavedIdea(`${problem} — ${selectedSolution.title}`, "better");
+            addSavedIdea(
+              `${problem} — ${selectedSolution.title}`,
+              "better",
+            );
             setSavedToast(true);
           }}
-          className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-sky-900 ring-1 ring-sky-100"
+          className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-sky-900 ring-1 ring-sky-100 disabled:opacity-40 hover:bg-sky-50"
         >
-          Save idea for later
+          Save my idea
         </button>
+        <Link
+          href="/better"
+          className="py-2 text-center text-sm text-slate-500 hover:text-slate-700"
+        >
+          ← Edit problem
+        </Link>
       </div>
     </PageShell>
   );
