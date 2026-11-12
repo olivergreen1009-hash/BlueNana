@@ -84,7 +84,7 @@ export default function ReflectPage() {
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-bluenana text-white">
             ✓
           </span>
-          How are you feeling about this step?
+          What happened when you tried it?
         </p>
         <div className="flex flex-col gap-2">
           {(

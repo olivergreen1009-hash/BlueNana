@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Banana } from "@/components/Banana";
 import { PageShell } from "@/components/PageShell";
+import { Toast } from "@/components/Toast";
 import { IMPROVEMENT_SOLUTIONS } from "@/lib/prompts";
 import {
   addSavedIdea,
@@ -38,8 +39,8 @@ export default function SolutionsPage() {
   const [pairIds, setPairIds] = useState<[string, string]>(() =>
     pickPair(IMPROVEMENT_SOLUTIONS),
   );
-  const [selected, setSelected] = useState<string | null>(null);
-  const [savedToast, setSavedToast] = useState(false);
+  const [selected, setSelected] = useState<string | null>(() => pairIds[0]);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     if (!problem) router.replace("/better");
@@ -56,9 +57,12 @@ export default function SolutionsPage() {
   const selectedSolution = shownSolutions.find((s) => s.id === selected);
 
   const anotherPair = useCallback(() => {
-    setPairIds((prev) => pickPair(IMPROVEMENT_SOLUTIONS, prev[0]));
-    setSelected(null);
-    setSavedToast(false);
+    setPairIds((prev) => {
+      const next = pickPair(IMPROVEMENT_SOLUTIONS, prev[0]);
+      setSelected(next[0]);
+      return next;
+    });
+    setToast(null);
   }, []);
 
   const tryImprovement = () => {
@@ -137,10 +141,8 @@ export default function SolutionsPage() {
         })}
       </ul>
 
-      {savedToast ? (
-        <p className="mt-4 text-center text-sm text-bluenana">
-          Saved to Ideas—you can find it anytime in the nav.
-        </p>
+      {toast ? (
+        <Toast message={toast} onDismiss={() => setToast(null)} />
       ) : null}
 
       <div className="mt-6 flex flex-col gap-2">
@@ -169,7 +171,7 @@ export default function SolutionsPage() {
                 `${problem} — ${selectedSolution.title}`,
                 "better",
               );
-              setSavedToast(true);
+              setToast("Saved to Ideas—you can find it anytime in the nav.");
             }}
             className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-800 ring-2 ring-[#FACC15] disabled:opacity-40 hover:bg-slate-50"
           >

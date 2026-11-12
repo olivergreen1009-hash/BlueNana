@@ -13,12 +13,11 @@ export function Nav() {
   const pathname = usePathname();
 
   function isActive(href: string) {
-    if (href === "/") return pathname === "/";
+    if (href === "/") {
+      return pathname === "/" || pathname.startsWith("/better");
+    }
     if (href === "/ideas") {
-      return (
-        pathname === "/ideas" ||
-        pathname.startsWith("/better")
-      );
+      return pathname === "/ideas" || pathname.startsWith("/ideas/");
     }
     return pathname === href || pathname.startsWith(`${href}/`);
   }

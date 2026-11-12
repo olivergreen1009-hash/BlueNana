@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { PageShell } from "@/components/PageShell";
+import { Toast } from "@/components/Toast";
 import { SuggestionCard } from "@/components/SuggestionCard";
 import {
   FILTER_LABELS,
@@ -122,11 +123,7 @@ export default function GoodPage() {
 
       <SuggestionCard body={current.text} />
 
-      {toast ? (
-        <p className="mt-4 rounded-xl bg-[#EEF4FD] px-3 py-2 text-center text-sm text-bluenana ring-1 ring-bluenana/10">
-          {toast}
-        </p>
-      ) : null}
+      {toast ? <Toast message={toast} onDismiss={() => setToast(null)} /> : null}
 
       <div className="mt-6 flex flex-col gap-2">
         <ActionButton
