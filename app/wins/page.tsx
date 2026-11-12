@@ -80,9 +80,16 @@ export default function WinsPage() {
                     ✓
                   </span>
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm leading-relaxed text-slate-800">
-                      {win.text}
-                    </p>
+                    <div className="min-w-0 flex-1">
+                      {win.kind === "mix-and-bump" ? (
+                        <span className="mb-1 inline-block rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                          Mix and Bump
+                        </span>
+                      ) : null}
+                      <p className="text-sm leading-relaxed text-slate-800">
+                        {win.text}
+                      </p>
+                    </div>
                     <time className="shrink-0 text-xs font-medium text-bluenana">
                       {formatDisplayDate(win.completedAt)}
                     </time>

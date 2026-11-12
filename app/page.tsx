@@ -39,6 +39,13 @@ export default function Home() {
           cta="Start with a frustration"
           variant="better"
         />
+        <PathCard
+          href="/mix"
+          title="Mix and Bump"
+          tagline="Invent something silly, then try a tiny real version."
+          cta="Mix something new"
+          variant="mix"
+        />
       </div>
 
       <TrustBar />
@@ -152,14 +159,18 @@ function PathCard({
   title: string;
   tagline: string;
   cta: string;
-  variant: "good" | "better";
+  variant: "good" | "better" | "mix";
 }) {
   return (
     <Link
       href={href}
       className="group flex gap-4 rounded-2xl border border-slate-100 bg-white px-4 py-5 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition hover:border-bluenana/20 hover:shadow-[0_4px_14px_rgba(26,90,215,0.1)]"
     >
-      <CardIcon variant={variant === "good" ? "heart" : "bulb"} />
+      <CardIcon
+        variant={
+          variant === "good" ? "heart" : variant === "better" ? "bulb" : "mix"
+        }
+      />
       <div className="min-w-0 flex-1">
         <h2 className="text-base font-bold tracking-tight text-bluenana sm:text-lg">
           {title}
@@ -176,7 +187,14 @@ function PathCard({
   );
 }
 
-function CardIcon({ variant }: { variant: "heart" | "bulb" }) {
+function CardIcon({ variant }: { variant: "heart" | "bulb" | "mix" }) {
+  if (variant === "mix") {
+    return (
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet-50 text-lg">
+        ✨
+      </span>
+    );
+  }
   if (variant === "heart") {
     return (
       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-bluenana/10">

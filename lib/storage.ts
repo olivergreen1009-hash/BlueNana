@@ -5,10 +5,12 @@ export type SavedIdea = {
   createdAt: string;
 };
 
+export type WinKind = "good" | "better" | "mix-and-bump";
+
 export type LittleWin = {
   id: string;
   text: string;
-  kind: "good" | "better";
+  kind: WinKind;
   completedAt: string;
   reflection?: string;
 };
@@ -138,7 +140,7 @@ export function getLittleWins(): LittleWin[] {
 
 export function addLittleWin(
   text: string,
-  kind: "good" | "better",
+  kind: WinKind,
   reflection?: string,
 ): LittleWin {
   const win: LittleWin = {

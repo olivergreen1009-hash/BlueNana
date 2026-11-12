@@ -14,7 +14,11 @@ export function Nav() {
 
   function isActive(href: string) {
     if (href === "/") {
-      return pathname === "/" || pathname.startsWith("/better");
+      return (
+        pathname === "/" ||
+        pathname.startsWith("/better") ||
+        pathname.startsWith("/mix")
+      );
     }
     if (href === "/ideas") {
       return pathname === "/ideas" || pathname.startsWith("/ideas/");
