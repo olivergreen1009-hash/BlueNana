@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Banana } from "@/components/Banana";
+import { MakeItMyOwnModal } from "@/components/MakeItMyOwnModal";
 import { PageShell } from "@/components/PageShell";
 import { Toast } from "@/components/Toast";
+import { TryReflectionModal } from "@/components/TryReflectionModal";
 import { IMPROVEMENT_SOLUTIONS } from "@/lib/prompts";
 import {
+  addLittleWin,
   addSavedIdea,
   getBetterProblem,
-  setBetterAttempt,
   setBetterSolution,
   subscribeBetterSession,
 } from "@/lib/storage";
@@ -41,6 +43,9 @@ export default function SolutionsPage() {
   );
   const [selected, setSelected] = useState<string | null>(() => pairIds[0]);
   const [toast, setToast] = useState<string | null>(null);
+  const [reflectOpen, setReflectOpen] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
+  const [pendingTryText, setPendingTryText] = useState("");
 
   useEffect(() => {
     if (!problem) router.replace("/better");
@@ -65,13 +70,17 @@ export default function SolutionsPage() {
     setToast(null);
   }, []);
 
-  const tryImprovement = () => {
+  const openTryModal = () => {
     if (!selectedSolution || !problem) return;
     const text = `${problem} — ${selectedSolution.title}: ${selectedSolution.description}`;
     setBetterSolution(selectedSolution.id);
-    setBetterAttempt(text);
-    router.push("/better/reflect");
+    setPendingTryText(text);
+    setReflectOpen(true);
   };
+
+  const ownInitialText = selectedSolution
+    ? `${problem} — ${selectedSolution.title}`
+    : problem;
 
   if (!problem) {
     return (
@@ -90,7 +99,7 @@ export default function SolutionsPage() {
         Explore solutions
       </h1>
       <p className="mt-1 text-center text-sm text-slate-500">
-        Let&apos;s look at ways to make this better.
+        Pick one small improvement to try.
       </p>
 
       <article className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -145,11 +154,11 @@ export default function SolutionsPage() {
         <Toast message={toast} onDismiss={() => setToast(null)} />
       ) : null}
 
-      <div className="mt-6 flex flex-col gap-2">
+      <div className="sticky bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-40 mt-6 -mx-1 flex flex-col gap-2 rounded-2xl bg-white/95 px-1 py-2 backdrop-blur-sm">
         <button
           type="button"
           disabled={!selectedSolution}
-          onClick={tryImprovement}
+          onClick={openTryModal}
           className="w-full rounded-xl bg-bluenana px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-40 hover:bg-bluenana-dark"
         >
           Try this improvement
@@ -165,17 +174,10 @@ export default function SolutionsPage() {
           <button
             type="button"
             disabled={!selectedSolution}
-            onClick={() => {
-              if (!selectedSolution) return;
-              addSavedIdea(
-                `${problem} — ${selectedSolution.title}`,
-                "better",
-              );
-              setToast("Saved to Ideas—you can find it anytime in the nav.");
-            }}
+            onClick={() => setOwnOpen(true)}
             className="flex-1 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-800 ring-2 ring-[#FACC15] disabled:opacity-40 hover:bg-slate-50"
           >
-            Save my idea
+            Make it my own
           </button>
         </div>
         <Link
@@ -185,6 +187,26 @@ export default function SolutionsPage() {
           ← Edit problem
         </Link>
       </div>
+
+      <TryReflectionModal
+        open={reflectOpen}
+        onClose={() => setReflectOpen(false)}
+        onSave={(reflection) => {
+          addLittleWin(pendingTryText, "better", reflection);
+          setReflectOpen(false);
+          setToast("Logged in My Little Wins—only you can see it.");
+        }}
+      />
+
+      <MakeItMyOwnModal
+        open={ownOpen}
+        initialText={ownInitialText}
+        onClose={() => setOwnOpen(false)}
+        onSave={(text) => {
+          addSavedIdea(text, "better");
+          setToast("Saved to Ideas—you can find it anytime in the nav.");
+        }}
+      />
     </PageShell>
   );
 }

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PageShell } from "@/components/PageShell";
+import { PrivacyHint } from "@/components/PrivacyHint";
 import { INSPIRATION_STARTERS, WHO_AFFECTS_LABELS } from "@/lib/prompts";
 import {
   setBetterProblem,
@@ -37,7 +38,8 @@ export default function BetterPage() {
         What&apos;s a small frustration you&apos;ve noticed?
       </h1>
 
-      <label className="mt-5 block">
+      <PrivacyHint className="mt-5" />
+      <label className="mt-2 block">
         <textarea
           value={problem}
           onChange={(e) => setProblem(e.target.value.slice(0, maxLen))}
@@ -106,14 +108,16 @@ export default function BetterPage() {
         </div>
       </fieldset>
 
-      <button
-        type="button"
-        disabled={!problem.trim() || !who}
-        onClick={continueNext}
-        className="mt-8 w-full rounded-xl bg-[#FACC15] px-4 py-3.5 text-sm font-semibold text-slate-900 shadow-sm disabled:opacity-40 hover:bg-[#EAB308]"
-      >
-        Continue to solutions →
-      </button>
+      <div className="sticky bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-40 mt-8 -mx-1 rounded-2xl bg-white/95 px-1 py-2 backdrop-blur-sm">
+        <button
+          type="button"
+          disabled={!problem.trim() || !who}
+          onClick={continueNext}
+          className="w-full rounded-xl bg-[#FACC15] px-4 py-3.5 text-sm font-semibold text-slate-900 shadow-sm disabled:opacity-40 hover:bg-[#EAB308]"
+        >
+          Continue to solutions →
+        </button>
+      </div>
     </PageShell>
   );
 }

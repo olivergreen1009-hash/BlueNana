@@ -1,16 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { PageShell } from "@/components/PageShell";
 import {
+  clearAllLittleWins,
   formatDisplayDate,
   getLittleWins,
+  removeLittleWin,
   subscribeStorage,
 } from "@/lib/storage";
 
 export default function WinsPage() {
   const wins = useSyncExternalStore(subscribeStorage, getLittleWins, () => []);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   return (
     <PageShell showBanana bananaSize="sm">
@@ -47,7 +50,7 @@ export default function WinsPage() {
       <article className="mt-5 rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
         <h2 className="text-base font-bold text-bluenana">Private timeline</h2>
         <p className="mt-1 text-sm text-slate-500">
-          Your wins. Your growth. Private to you.
+          Your wins, only on this device.
         </p>
 
         {wins.length === 0 ? (
@@ -61,36 +64,81 @@ export default function WinsPage() {
             </Link>
           </div>
         ) : (
-          <ol className="relative mt-6 border-s border-bluenana/30 pl-5">
-            {wins.map((win, idx) => (
-              <li
-                key={win.id}
-                className={`relative pb-5 last:pb-0 ${
-                  idx < wins.length - 1 ? "border-b border-slate-100 mb-5" : ""
-                }`}
-              >
-                <span
-                  className="absolute -left-[1.6rem] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-bluenana text-[10px] text-white"
-                  aria-hidden
+          <>
+            <ol className="relative mt-6 border-s border-bluenana/30 pl-5">
+              {wins.map((win, idx) => (
+                <li
+                  key={win.id}
+                  className={`relative pb-5 last:pb-0 ${
+                    idx < wins.length - 1 ? "mb-5 border-b border-slate-100" : ""
+                  }`}
                 >
-                  ✓
-                </span>
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm leading-relaxed text-slate-800">
-                    {win.text}
+                  <span
+                    className="absolute -left-[1.6rem] top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-bluenana text-[10px] text-white"
+                    aria-hidden
+                  >
+                    ✓
+                  </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm leading-relaxed text-slate-800">
+                      {win.text}
+                    </p>
+                    <time className="shrink-0 text-xs font-medium text-bluenana">
+                      {formatDisplayDate(win.completedAt)}
+                    </time>
+                  </div>
+                  {win.reflection ? (
+                    <p className="mt-1 text-xs italic text-slate-500">
+                      {win.reflection}
+                    </p>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => removeLittleWin(win.id)}
+                    className="mt-2 text-xs font-medium text-slate-500 hover:text-red-600"
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-6 border-t border-slate-100 pt-4">
+              {!confirmClear ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirmClear(true)}
+                  className="text-xs font-medium text-slate-500 hover:text-red-600"
+                >
+                  Delete everything
+                </button>
+              ) : (
+                <div className="rounded-xl border border-red-100 bg-red-50/80 p-3">
+                  <p className="text-sm text-slate-700">
+                    Remove all wins from this device?
                   </p>
-                  <time className="shrink-0 text-xs font-medium text-bluenana">
-                    {formatDisplayDate(win.completedAt)}
-                  </time>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearAllLittleWins();
+                        setConfirmClear(false);
+                      }}
+                      className="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700"
+                    >
+                      Yes, delete all
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmClear(false)}
+                      className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-white"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-                {win.reflection ? (
-                  <p className="mt-1 text-xs italic text-slate-500">
-                    {win.reflection}
-                  </p>
-                ) : null}
-              </li>
-            ))}
-          </ol>
+              )}
+            </div>
+          </>
         )}
       </article>
     </PageShell>

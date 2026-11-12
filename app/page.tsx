@@ -16,10 +16,7 @@ export default function Home() {
             better today.
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-slate-600">
-            Small ideas. Real people. A happier world.
-          </p>
-          <p className="mt-1 text-sm leading-relaxed text-slate-600">
-            A little inspiration to make everyday life better.
+            Small ideas when you want them. Quiet and private.
           </p>
         </header>
         <div className="relative z-0 shrink-0 -mr-2 -mt-1">
@@ -31,15 +28,15 @@ export default function Home() {
         <PathCard
           href="/good"
           title="Do a Little Good"
-          tagline="Tiny actions. Big difference."
+          tagline="One small kindness when you have a moment."
           cta="Find a small idea"
           variant="good"
         />
         <PathCard
           href="/better"
           title="Make Something Better"
-          tagline="Spotted a problem? Let's improve it."
-          cta="Let's solve a problem"
+          tagline="Name a small frustration and try a tweak."
+          cta="Start with a frustration"
           variant="better"
         />
       </div>
@@ -119,6 +116,12 @@ function TrustBar() {
           }
         />
       </ul>
+      <p className="mt-3 text-center text-[0.6875rem] text-slate-500">
+        For ages 18 and up ·{" "}
+        <Link href="/privacy" className="font-medium text-bluenana hover:underline">
+          Privacy &amp; safety
+        </Link>
+      </p>
     </footer>
   );
 }

@@ -156,6 +156,23 @@ export function addLittleWin(
   return win;
 }
 
+export function removeLittleWin(id: string): void {
+  const next = getLittleWins().filter((w) => w.id !== id);
+  winsSnapshot = next;
+  winsCacheReady = true;
+  localStorage.setItem(WINS_KEY, JSON.stringify(next));
+  bumpStorage();
+}
+
+export function clearAllLittleWins(): void {
+  winsSnapshot = [];
+  winsCacheReady = true;
+  if (typeof window !== "undefined") {
+    localStorage.setItem(WINS_KEY, JSON.stringify([]));
+  }
+  bumpStorage();
+}
+
 export function setBetterProblem(problem: string): void {
   if (typeof window === "undefined") return;
   sessionStorage.setItem(BETTER_PROBLEM_KEY, problem);

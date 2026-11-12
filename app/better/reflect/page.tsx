@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Banana } from "@/components/Banana";
 import { PageShell } from "@/components/PageShell";
+import { PrivacyHint } from "@/components/PrivacyHint";
 import {
   addLittleWin,
   addSavedIdea,
@@ -34,15 +35,22 @@ export default function ReflectPage() {
     }
   }, [router, attempt]);
 
+  const saveWithReflection = (includeReflection: boolean) => {
+    const base = attempt.trim();
+    if (!base || outcome !== "tried") return;
+    const note = includeReflection ? reflection.trim() : "";
+    addLittleWin(base, "better", note || undefined);
+    clearBetterFlow();
+    setSaved(true);
+    router.push("/wins");
+  };
+
   const saveProgress = () => {
     const base = attempt.trim();
     if (!base) return;
 
     if (outcome === "tried") {
-      addLittleWin(base, "better", reflection);
-      clearBetterFlow();
-      setSaved(true);
-      router.push("/wins");
+      saveWithReflection(true);
       return;
     }
 
@@ -73,10 +81,10 @@ export default function ReflectPage() {
         <Banana size="md" className="rotate-[-8deg]" />
       </div>
       <h1 className="mt-3 text-center text-2xl font-bold text-slate-900">
-        Every little try matters.
+        How did it go?
       </h1>
       <p className="mt-2 text-center text-sm text-slate-600">
-        Take a moment to reflect. You showed up—that counts.
+        Whatever you picked is fine. No pressure.
       </p>
 
       <ReflectCard className="mt-6">
@@ -118,37 +126,46 @@ export default function ReflectPage() {
         </div>
       </ReflectCard>
 
-      <ReflectCard className="mt-5">
-        <label className="block">
-          <span className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-            <span aria-hidden>✎</span> Reflection (optional)
-          </span>
-          <textarea
-            value={reflection}
-            onChange={(e) => setReflection(e.target.value.slice(0, maxLen))}
-            rows={3}
-            placeholder="What did you notice? How are you feeling?"
-            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-bluenana/30"
-          />
-          <span className="mt-1 block text-right text-xs text-slate-400">
-            {reflection.length}/{maxLen}
-          </span>
-        </label>
-      </ReflectCard>
+      {outcome === "tried" ? (
+        <ReflectCard className="mt-5">
+          <label className="block">
+            <span className="text-sm font-semibold text-slate-800">
+              What did you notice?
+            </span>
+            <p className="mt-0.5 text-xs text-slate-500">Optional—you can skip.</p>
+            <PrivacyHint className="mt-2" />
+            <textarea
+              value={reflection}
+              onChange={(e) => setReflection(e.target.value.slice(0, maxLen))}
+              rows={3}
+              placeholder="A small observation, or leave blank…"
+              className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-bluenana/30"
+            />
+            <span className="mt-1 block text-right text-xs text-slate-400">
+              {reflection.length}/{maxLen}
+            </span>
+          </label>
+          <button
+            type="button"
+            disabled={saved}
+            onClick={() => saveWithReflection(false)}
+            className="mt-3 w-full rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+          >
+            Skip
+          </button>
+        </ReflectCard>
+      ) : null}
 
-      <button
-        type="button"
-        disabled={!outcome || saved}
-        onClick={saveProgress}
-        className="mt-6 w-full rounded-xl bg-bluenana px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-40 hover:bg-bluenana-dark"
-      >
-        💾 Save my progress
-      </button>
-
-      <p className="mt-5 text-center text-xs italic leading-relaxed text-bluenana">
-        <span aria-hidden>♥ </span>
-        Note: Your experience matters, even when things don&apos;t go as planned.
-      </p>
+      <div className="sticky bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-40 mt-6 -mx-1 rounded-2xl bg-white/95 px-1 py-2 backdrop-blur-sm">
+        <button
+          type="button"
+          disabled={!outcome || saved}
+          onClick={saveProgress}
+          className="w-full rounded-xl bg-bluenana px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-40 hover:bg-bluenana-dark"
+        >
+          Save my progress
+        </button>
+      </div>
 
       <Link
         href="/"
